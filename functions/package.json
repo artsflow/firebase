@@ -1,5 +1,5 @@
 {
-  "name": "functions",
+  "name": "artsflow-firebase-functions",
   "scripts": {
     "lint": "prettier --check \"src/*.{ts,tsx}\" && eslint \"src/*.{ts,tsx}\"",
     "type-check": "tsc --pretty --noEmit",
