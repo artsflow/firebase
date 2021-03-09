@@ -10,13 +10,13 @@ export const createUserRecord = functions
     const profileRef = db.doc(`profiles/${user.uid}`)
     const batch = db.batch()
 
-    const [fistName = null, lastName = null] = user.displayName?.split(' ') || ''
+    const [firstName = null, lastName = null] = user.displayName?.split(' ') || ''
 
     const userData = {
       createdAt: context.timestamp,
       email: user.email,
       displayName: user.displayName,
-      fistName,
+      firstName,
       lastName,
       emailVerified: user.emailVerified,
       provider: user.providerData[0].providerId,
@@ -26,7 +26,7 @@ export const createUserRecord = functions
       createdAt: context.timestamp,
       displayName: user.displayName,
       photoURL: user.photoURL,
-      fistName,
+      firstName,
       lastName,
     }
 
