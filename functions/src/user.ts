@@ -22,3 +22,18 @@ export const updateProfile = functions
 
     return batch.commit()
   })
+
+export const updateAvatarUrl = functions
+  .region('europe-west2')
+  .https.onCall(async (data, context) => {
+    console.log('updateAvatarUrl!!', data)
+    const userId = context.auth?.uid
+
+    const { photoURL } = data
+
+    if (!userId) return false
+
+    const profileRef = db.collection('profiles').doc(userId)
+
+    return profileRef.set({ photoURL }, { merge: true })
+  })
