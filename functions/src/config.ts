@@ -1,6 +1,8 @@
 import * as admin from 'firebase-admin'
 admin.initializeApp()
 
+const FieldValue = admin.firestore.FieldValue
+
 const db = admin.firestore()
 
 if (process.env.FUNCTIONS_EMULATOR) {
@@ -8,4 +10,4 @@ if (process.env.FUNCTIONS_EMULATOR) {
   db.settings({ host: 'localhost:9042', ssl: false })
 }
 
-export { db, admin }
+export { db, admin, FieldValue }
