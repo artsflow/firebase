@@ -20,6 +20,7 @@ export const addActivity = functions.region('europe-west2').https.onCall(async (
     location: omit(locationData, ['address', 'details', 'placeId']),
     status: 'active',
     createdAt: FieldValue.serverTimestamp(),
+    userId,
   }
 
   const batch = db.batch()
