@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions'
 import { omit } from 'lodash'
 
-import { db, FieldValue } from './config'
+import { db, serverTimestamp } from './config'
 import { nanoid } from './utils'
 
 export const addActivity = functions.region('europe-west2').https.onCall(async (data, context) => {
@@ -19,7 +19,7 @@ export const addActivity = functions.region('europe-west2').https.onCall(async (
     ...omit(data, 'location'),
     location: omit(locationData, ['address', 'details', 'placeId']),
     status: 'active',
-    createdAt: FieldValue.serverTimestamp(),
+    createdAt: serverTimestamp(),
     userId,
   }
 
@@ -36,3 +36,85 @@ export const addActivity = functions.region('europe-west2').https.onCall(async (
 
   return id
 })
+
+export const setActivityStatus = functions
+  .region('europe-west2')
+  .https.onCall(async (data, context) => {
+    console.log('setActivityStatus!!', data)
+    const userId = context.auth?.uid
+
+    if (!userId) return false
+
+    const { id, status } = data
+    const activityRef = db.collection('activities').doc(id)
+    const doc = await activityRef.get()
+
+    if (userId !== doc.data()?.userId) return false
+
+    return activityRef.set({ status }, { merge: true })
+  })
+
+export const deleteActivity = functions
+  .region('europe-west2')
+  .https.onCall(async (data, context) => {
+    console.log('deleteActivity!!', data)
+    const userId = context.auth?.uid
+
+    if (!userId) return false
+
+    const { id } = data
+    const activityRef = db.collection('activities').doc(id)
+    const doc = await activityRef.get()
+
+    if (userId !== doc.data()?.userId) return false
+
+    const locationRef = db.collection('locations').doc(id)
+
+    const batch = db.batch()
+
+    batch.delete(activityRef)
+    batch.delete(locationRef)
+
+    return batch.commit()
+  })
+
+export const onDeleteActivity = functions
+  .region('europe-west2')
+  .firestore.document('activities/{id}')
+  .onDelete(async (snap) => {
+    const batch = db.batch()
+
+    const deletedActivityData = snap.data()
+    const deletedActivitiesRef = db.doc(`deleted_activities/${snap.id}`)
+
+    batch.set(
+      deletedActivitiesRef,
+      {
+        ...deletedActivityData,
+        meta: { deletedAt: serverTimestamp() },
+      },
+      { merge: true }
+    )
+
+    return batch.commit()
+  })
+
+export const onDeleteLocation = functions
+  .region('europe-west2')
+  .firestore.document('locations/{id}')
+  .onDelete(async (snap) => {
+    const batch = db.batch()
+
+    const deletedLocationData = snap.data()
+    const deletedActivitiesRef = db.doc(`deleted_activities/${snap.id}`)
+
+    batch.set(
+      deletedActivitiesRef,
+      {
+        location: { ...deletedLocationData },
+      },
+      { merge: true }
+    )
+
+    return batch.commit()
+  })
