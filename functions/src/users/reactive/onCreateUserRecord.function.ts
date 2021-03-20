@@ -1,8 +1,8 @@
 import * as functions from 'firebase-functions'
 
-import { db } from './config'
+import { db } from '../../config'
 
-export const createUserRecord = functions
+export const onCreateUserRecord = functions
   .region('europe-west2')
   .auth.user()
   .onCreate(async (user, context) => {
