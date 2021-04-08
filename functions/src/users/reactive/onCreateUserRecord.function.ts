@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions'
 
-import { db, serverTimestamp } from '../../config'
+import { db, serverTimestamp, stripe } from '../../config'
 
 export const onCreateUserRecord = functions
   .region('europe-west2')
@@ -9,6 +9,24 @@ export const onCreateUserRecord = functions
     const userRef = db.doc(`users/${user.uid}`)
     const profileRef = db.doc(`profiles/${user.uid}`)
     const batch = db.batch()
+
+    // TODO: check if it is creative (created with metadata from web app)
+    const stripeAcc = await stripe.accounts.create({
+      country: 'GB',
+      type: 'custom',
+      capabilities: {
+        card_payments: {
+          requested: true,
+        },
+        transfers: {
+          requested: true,
+        },
+      },
+      email: user.email,
+      metadata: {
+        userId: user.uid,
+      },
+    })
 
     const [firstName = null, lastName = null] = user.displayName?.split(' ') || ''
 
@@ -36,6 +54,7 @@ export const onCreateUserRecord = functions
       photoURL: user.photoURL,
       firstName,
       lastName,
+      sid: stripeAcc.id,
     }
 
     batch.set(userRef, userData)
