@@ -1,11 +1,11 @@
 import * as functions from 'firebase-functions'
 
-import { db } from '../../config'
+import { db, serverTimestamp } from '../../config'
 
 export const onCreateUserRecord = functions
   .region('europe-west2')
   .auth.user()
-  .onCreate(async (user, context) => {
+  .onCreate(async (user) => {
     const userRef = db.doc(`users/${user.uid}`)
     const profileRef = db.doc(`profiles/${user.uid}`)
     const batch = db.batch()
@@ -20,7 +20,7 @@ export const onCreateUserRecord = functions
     const isBetaTester = doc.exists ? true : false
 
     const userData = {
-      createdAt: context.timestamp,
+      createdAt: serverTimestamp(),
       email: user.email,
       displayName: user.displayName,
       firstName,
@@ -31,7 +31,7 @@ export const onCreateUserRecord = functions
     }
 
     const profileData = {
-      createdAt: context.timestamp,
+      createdAt: serverTimestamp(),
       displayName: user.displayName,
       photoURL: user.photoURL,
       firstName,
