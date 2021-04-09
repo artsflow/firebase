@@ -8,3 +8,5 @@ export * from './activities/callable/addActivity.function'
 export * from './activities/callable/deleteActivity.function'
 export * from './activities/callable/editActivity.function'
 export * from './activities/callable/setActivityStatus.function'
+
+export * from './stripe/callable/getStripeAccountStatus.function'
