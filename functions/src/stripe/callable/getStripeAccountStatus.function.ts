@@ -13,14 +13,15 @@ export const getStripeAccountStatus = functions
 
     const stripeAcc = await getStripeAccount(userId)
 
-    // console.log(stripeAcc)
+    // console.log(stripeAcc.requirements, stripeAcc.capabilities)
 
-    if (
-      stripeAcc.capabilities?.card_payments == 'active' &&
-      stripeAcc.capabilities?.transfers == 'active'
-    ) {
+    const verified =
+      stripeAcc?.capabilities?.card_payments === 'active' &&
+      stripeAcc?.capabilities?.transfers === 'active'
+
+    if (verified) {
       return {
-        verified: true,
+        verified,
         payouts_enabled: stripeAcc.payouts_enabled,
         requirements: stripeAcc.requirements,
       }
@@ -35,7 +36,7 @@ export const getStripeAccountStatus = functions
     })
 
     return {
-      verified: false,
+      verified,
       onboardingUrl: accountLinks.url,
       payouts_enabled: stripeAcc.payouts_enabled,
       requirements: stripeAcc.requirements,
