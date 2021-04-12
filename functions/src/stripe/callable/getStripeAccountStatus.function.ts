@@ -13,11 +13,14 @@ export const getStripeAccountStatus = functions
 
     const stripeAcc = await getStripeAccount(userId)
 
+    if (!stripeAcc) return null
+
     // console.log(stripeAcc.requirements, stripeAcc.capabilities)
 
     const verified =
       stripeAcc?.capabilities?.card_payments === 'active' &&
-      stripeAcc?.capabilities?.transfers === 'active'
+      stripeAcc?.capabilities?.transfers === 'active' &&
+      stripeAcc?.requirements?.pending_verification?.length === 0
 
     if (verified) {
       return {

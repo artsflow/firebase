@@ -14,6 +14,8 @@ export const addStripeExternalAccount = functions
 
     const stripeAcc = await getStripeAccount(userId)
 
+    if (!stripeAcc) return null
+
     try {
       const bankAccount = await stripe.accounts.createExternalAccount(stripeAcc.id, {
         // @ts-ignorecreateExternalAccount

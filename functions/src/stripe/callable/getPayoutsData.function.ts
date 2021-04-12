@@ -13,6 +13,8 @@ export const getPayoutsData = functions
 
     const stripeAcc = await getStripeAccount(userId)
 
+    if (!stripeAcc) return null
+
     try {
       const bankAccounts = await stripe.accounts.listExternalAccounts(stripeAcc.id, {
         limit: 3,
