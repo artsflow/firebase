@@ -10,3 +10,5 @@ export * from './activities/callable/editActivity.function'
 export * from './activities/callable/setActivityStatus.function'
 
 export * from './stripe/callable/getStripeAccountStatus.function'
+export * from './stripe/callable/addStripeExternalAccount.function'
+export * from './stripe/callable/getPayoutsData.function'

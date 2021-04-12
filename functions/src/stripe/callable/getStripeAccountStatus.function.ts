@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions'
 
-import { db, stripe, artsflowUrl } from '../../config'
+import { stripe, artsflowUrl } from '../../config'
+import { getStripeAccount } from '../utils'
 
 export const getStripeAccountStatus = functions
   .region('europe-west2')
@@ -10,11 +11,7 @@ export const getStripeAccountStatus = functions
 
     if (!userId) return false
 
-    const profileRef = db.collection('profiles').doc(userId)
-    const doc = await profileRef.get()
-    const sid = doc.data()?.sid
-
-    const stripeAcc = await stripe.accounts.retrieve(sid)
+    const stripeAcc = await getStripeAccount(userId)
 
     // console.log(stripeAcc)
 
@@ -22,11 +19,15 @@ export const getStripeAccountStatus = functions
       stripeAcc.capabilities?.card_payments == 'active' &&
       stripeAcc.capabilities?.transfers == 'active'
     ) {
-      return { verified: true }
+      return {
+        verified: true,
+        payouts_enabled: stripeAcc.payouts_enabled,
+        requirements: stripeAcc.requirements,
+      }
     }
 
     const accountLinks = await stripe.accountLinks.create({
-      account: sid,
+      account: stripeAcc.id,
       refresh_url: artsflowUrl,
       return_url: artsflowUrl,
       type: 'account_onboarding',
@@ -36,5 +37,7 @@ export const getStripeAccountStatus = functions
     return {
       verified: false,
       onboardingUrl: accountLinks.url,
+      payouts_enabled: stripeAcc.payouts_enabled,
+      requirements: stripeAcc.requirements,
     }
   })
