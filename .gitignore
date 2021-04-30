@@ -66,4 +66,4 @@ node_modules/
 .env
 
 .runtimeconfig.json
-_emulator_data
+_emulator_local_data_
