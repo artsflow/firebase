@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions'
 
 import { stripe, ARTSFLOW_FEE } from '../../config'
-import { getOrCreateStripeCustomer } from '../utils'
+import { getOrCreateStripeCustomer, getDocument } from '../utils'
 
 export const getPaymentIntent = functions
   .region('europe-west2')
@@ -9,19 +9,20 @@ export const getPaymentIntent = functions
     console.log('getPaymentIntent!!', data)
     const userId = context.auth?.uid as any
 
-    const { activityId, date, time, phone, name } = data
+    const { activityId, date, dateString, phone, name } = data
 
-    if (!userId) return false
+    if (!userId || !activityId || !date) return false
 
-    // get creative user - id
-    // get creative activity - price / title /
+    const { data: user } = await getDocument(userId, 'users')
+    const { data: activity } = await getDocument(activityId, 'activities')
+    const { data: creative } = await getDocument(activity.userId, 'users')
 
-    const email = 'ciocan@gmail.com'
-    const activityTitle = 'Workshop'
-    const amount = 2500
+    const email = user.email
+    const activityTitle = activity.title
+    const amount = activity.price * 100
 
-    const artsflowFeeAmount = (amount * ARTSFLOW_FEE) / 100
-    const creativeConnectedAccount = 'acct_1IfQl4PfliBGToKi'
+    const artsflowFeeAmount = Math.round((amount * ARTSFLOW_FEE) / 100)
+    const creativeConnectedAccountId = creative.stripeAccountId
 
     const customer = await getOrCreateStripeCustomer(userId, { phone, name })
 
@@ -33,11 +34,23 @@ export const getPaymentIntent = functions
       receipt_email: email,
       description: activityTitle,
       customer: customer.id,
-      on_behalf_of: creativeConnectedAccount,
+      on_behalf_of: creativeConnectedAccountId,
+      statement_descriptor_suffix: 'artsflow',
       transfer_data: {
-        destination: creativeConnectedAccount,
+        destination: creativeConnectedAccountId,
       },
-      metadata: { activityId, date, time, title: activityTitle },
+      metadata: {
+        userId,
+        name,
+        phone,
+        email,
+        activityId,
+        date,
+        dateString,
+        title: activityTitle,
+        creativeId: creative.id,
+        amount,
+      },
     })
 
     return {
