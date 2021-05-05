@@ -1,4 +1,5 @@
 import * as functions from 'firebase-functions'
+import { fromUnixTime } from 'date-fns'
 
 import { stripe, ARTSFLOW_FEE } from '../../config'
 import { getOrCreateStripeCustomer, getDocument } from '../utils'
@@ -9,13 +10,15 @@ export const getPaymentIntent = functions
     console.log('getPaymentIntent!!', data)
     const userId = context.auth?.uid as any
 
-    const { activityId, date, dateString, phone, name } = data
+    const { activityId, timestamp, phone, name } = data
 
-    if (!userId || !activityId || !date) return false
+    if (!userId || !activityId || !timestamp) return false
 
     const { data: user } = await getDocument(userId, 'users')
     const { data: activity } = await getDocument(activityId, 'activities')
     const { data: creative } = await getDocument(activity.userId, 'users')
+
+    const dateString = fromUnixTime(timestamp).toString()
 
     const email = user.email
     const activityTitle = activity.title
@@ -45,7 +48,7 @@ export const getPaymentIntent = functions
         phone,
         email,
         activityId,
-        date,
+        timestamp: Number(timestamp),
         dateString,
         title: activityTitle,
         creativeId: creative.id,
