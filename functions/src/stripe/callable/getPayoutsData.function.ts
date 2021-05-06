@@ -11,18 +11,17 @@ export const getPayoutsData = functions
 
     if (!userId) return false
 
-    const stripeAcc = await getStripeAccount(userId)
-
-    if (!stripeAcc) return null
+    const stripeAccount = await getStripeAccount(userId)
+    if (!stripeAccount) return null
+    console.log('stripeAccount', stripeAccount.id)
 
     try {
-      const bankAccounts = await stripe.accounts.listExternalAccounts(stripeAcc.id, {
-        limit: 3,
-      })
+      const bankAccounts = await stripe.accounts.listExternalAccounts(stripeAccount.id)
+      const list = await stripe.payouts.list({ limit: 100 }, { stripeAccount: stripeAccount.id })
 
       return {
         accounts: bankAccounts.data,
-        list: [],
+        list,
       }
     } catch (error) {
       console.error('ERROR:getPayoutsData:', error)
