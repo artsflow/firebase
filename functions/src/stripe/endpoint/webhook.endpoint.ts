@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions'
 
 import { db, serverTimestamp, stripe, STRIPE_WEBHOOK_SECRET } from '../../config'
+import { getDocument } from '../../utils'
 
 export const webhook = functions
   .region('europe-west2')
@@ -22,6 +23,10 @@ export const webhook = functions
   })
 
 const createBooking = async (data: any) => {
+  const { userId, phone } = data.metadata
+  const { data: user, snapshot: userSnapshot } = await getDocument(userId, 'users')
+  if (!user.phone) await userSnapshot.ref.set({ phone }, { merge: true })
+
   const bookingData = {
     ...data.metadata,
     timestamp: Number(data.metadata.timestamp),

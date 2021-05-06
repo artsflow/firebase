@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions'
 
 import { db, serverTimestamp } from '../../config'
-import { getStripeAccount } from '../../stripe/utils'
+import { getStripeAccount } from '../../utils'
 
 export const updateUserVerification = functions
   .region('europe-west2')

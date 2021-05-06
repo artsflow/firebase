@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions'
 
 import { stripe } from '../../config'
-import { getStripeAccount } from '../utils'
+import { getStripeAccount } from '../../utils'
 
 export const getPayoutsData = functions
   .region('europe-west2')
@@ -19,7 +19,7 @@ export const getPayoutsData = functions
       const bankAccounts = await stripe.accounts.listExternalAccounts(stripeAcc.id, {
         limit: 3,
       })
-      // console.log(bankAccounts)
+
       return {
         accounts: bankAccounts.data,
         list: [],

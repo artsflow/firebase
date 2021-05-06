@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions'
 
 import { stripe, artsflowUrl } from '../../config'
-import { getOrCreateStripeAccount } from '../utils'
+import { getOrCreateStripeAccount } from '../../utils'
 
 export const createStripeAccountLinks = functions
   .region('europe-west2')

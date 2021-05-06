@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions'
 
 import { stripe } from '../../config'
-import { getStripeAccount } from '../utils'
+import { getStripeAccount } from '../../utils'
 
 export const addStripeExternalAccount = functions
   .region('europe-west2')

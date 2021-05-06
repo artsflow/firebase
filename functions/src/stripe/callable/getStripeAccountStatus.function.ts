@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions'
 
-import { getStripeAccount } from '../utils'
+import { getStripeAccount } from '../../utils'
 
 export const getStripeAccountStatus = functions
   .region('europe-west2')

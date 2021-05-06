@@ -2,7 +2,7 @@ import * as functions from 'firebase-functions'
 import { fromUnixTime } from 'date-fns'
 
 import { stripe, ARTSFLOW_FEE } from '../../config'
-import { getOrCreateStripeCustomer, getDocument } from '../utils'
+import { getOrCreateStripeCustomer, getDocument } from '../../utils'
 
 export const getPaymentIntent = functions
   .region('europe-west2')
