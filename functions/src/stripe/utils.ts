@@ -77,5 +77,5 @@ export const getOrCreateStripeCustomer = async (userId: string, params?: any) =>
 export const getDocument = async (id: string, collection: string) => {
   const snapshot = await db.collection(collection).doc(id).get()
   const data = snapshot.data() as any
-  return { data, snapshot }
+  return { data: { ...data, id }, snapshot }
 }
