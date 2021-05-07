@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions'
 
-import { stripe, artsflowUrl } from '../../config'
+import { stripe, ARTSFLOW_APP_URL } from '../../config'
 import { getOrCreateStripeAccount } from '../../utils'
 
 export const createStripeAccountLinks = functions
@@ -15,8 +15,8 @@ export const createStripeAccountLinks = functions
 
     const accountLinks = await stripe.accountLinks.create({
       account: stripeAccount.id,
-      refresh_url: artsflowUrl,
-      return_url: `${artsflowUrl}/return`,
+      refresh_url: ARTSFLOW_APP_URL,
+      return_url: `${ARTSFLOW_APP_URL}/return`,
       type: 'account_onboarding',
       collect: 'eventually_due',
     })

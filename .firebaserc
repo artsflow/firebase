@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "artsflow-com"
+    "default": "artsflow-com",
+    "staging": "artsflow--staging"
   }
 }
