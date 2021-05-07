@@ -17,7 +17,7 @@ service cloud.firestore {
     }
 
     match /bookings/{docId} {
-      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow read: if request.auth != null && (request.auth.uid == resource.data.userId || request.auth.uid == resource.data.creativeId);
       allow write: if false;
     }
     
