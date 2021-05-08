@@ -5,7 +5,6 @@ import { getStripeAccount } from '../../utils'
 export const getStripeAccountStatus = functions
   .region('europe-west2')
   .https.onCall(async (data, context) => {
-    console.log('getStripeAccountStatus!!')
     const userId = context.auth?.uid
 
     if (!userId) return false

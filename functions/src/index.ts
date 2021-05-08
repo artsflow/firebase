@@ -18,5 +18,6 @@ export * from './stripe/callable/getPayoutsData.function'
 export * from './stripe/callable/getBalance.function'
 export * from './stripe/callable/getPaymentIntent.function'
 export * from './stripe/endpoint/webhook.endpoint'
+export * from './stripe/endpoint/webhook-connect.endpoint'
 
 export * from './bookings/callable/createFreeBooking.function'

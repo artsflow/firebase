@@ -13,6 +13,7 @@ let key = functions.config().stripe.prod
 
 let ARTSFLOW_APP_URL = functions.config().artsflow.app_url
 let STRIPE_WEBHOOK_SECRET = functions.config().stripe.webhook
+const STRIPE_WEBHOOK_SECRET_CONNECT = functions.config().stripe.webhook_connect
 
 if (process.env.FUNCTIONS_EMULATOR) {
   console.info('running on emulator')
@@ -26,4 +27,4 @@ export const stripe = new Stripe(key, { apiVersion: '2020-08-27' })
 
 export const ARTSFLOW_FEE = 10
 
-export { db, admin, ARTSFLOW_APP_URL, STRIPE_WEBHOOK_SECRET }
+export { db, admin, ARTSFLOW_APP_URL, STRIPE_WEBHOOK_SECRET, STRIPE_WEBHOOK_SECRET_CONNECT }

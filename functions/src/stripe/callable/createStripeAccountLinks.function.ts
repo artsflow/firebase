@@ -5,7 +5,6 @@ import { stripe, ARTSFLOW_APP_URL } from '../../config'
 export const createStripeAccountLinks = functions
   .region('europe-west2')
   .https.onCall(async (data, context) => {
-    console.log('createStripeAccountLinks!!', data)
     const userId = context.auth?.uid
     const { stripeAccountId } = data
 

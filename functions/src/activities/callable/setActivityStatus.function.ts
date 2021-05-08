@@ -5,7 +5,6 @@ import { db } from '../../config'
 export const setActivityStatus = functions
   .region('europe-west2')
   .https.onCall(async (data, context) => {
-    console.log('setActivityStatus!!', data)
     const userId = context.auth?.uid
 
     if (!userId) return false

@@ -7,7 +7,6 @@ import { getOrCreateStripeCustomer, getDocument } from '../../utils'
 export const getPaymentIntent = functions
   .region('europe-west2')
   .https.onCall(async (data, context) => {
-    console.log('getPaymentIntent!!', data)
     const userId = context.auth?.uid as any
 
     const { activityId, timestamp, phone, name } = data

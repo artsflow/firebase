@@ -4,7 +4,6 @@ import { omit } from 'lodash'
 import { db, serverTimestamp } from '../../config'
 
 export const editActivity = functions.region('europe-west2').https.onCall(async (data, context) => {
-  console.log('editActivity!!', data)
   const userId = context.auth?.uid
 
   if (!userId) return false

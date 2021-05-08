@@ -5,7 +5,6 @@ import { db } from '../../config'
 export const updateAvatarUrl = functions
   .region('europe-west2')
   .https.onCall(async (data, context) => {
-    console.log('updateAvatarUrl!!', data)
     const userId = context.auth?.uid
 
     const { photoURL } = data

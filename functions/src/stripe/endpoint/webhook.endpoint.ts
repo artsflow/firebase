@@ -8,7 +8,6 @@ export const webhook = functions
   .https.onRequest(async (request, response) => {
     const sig = request.headers['stripe-signature'] as any
     const event = stripe.webhooks.constructEvent(request['rawBody'], sig, STRIPE_WEBHOOK_SECRET)
-    console.log('WEBHOOK', event.type)
 
     try {
       if (event.type === 'payment_intent.succeeded') {

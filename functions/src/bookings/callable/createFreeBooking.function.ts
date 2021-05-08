@@ -7,7 +7,6 @@ import { db, serverTimestamp } from '../../config'
 export const createFreeBooking = functions
   .region('europe-west2')
   .https.onCall(async (data, context) => {
-    console.log('createFreeBooking!!', data)
     const userId = context.auth?.uid as any
 
     const { activityId, timestamp, phone, name } = data

@@ -5,7 +5,6 @@ import { db } from '../../config'
 export const updateProfile = functions
   .region('europe-west2')
   .https.onCall(async (data, context) => {
-    console.log('updateProfile!!', data)
     const userId = context.auth?.uid
     const batch = db.batch()
 

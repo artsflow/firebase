@@ -6,7 +6,6 @@ import { getStripeAccount } from '../../utils'
 export const addStripeExternalAccount = functions
   .region('europe-west2')
   .https.onCall(async (data, context) => {
-    console.log('addStripeExternalAccount!!', data)
     const userId = context.auth?.uid
     const { account } = data
 
@@ -30,10 +29,10 @@ export const addStripeExternalAccount = functions
           userId,
         },
       })
-      console.log(bankAccount)
+
       return bankAccount
     } catch (error) {
-      console.error('ERROR:createExternalAccount:', error)
+      functions.logger.error(error)
       return error
     }
   })

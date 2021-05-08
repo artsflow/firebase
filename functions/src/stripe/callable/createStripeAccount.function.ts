@@ -5,7 +5,6 @@ import { db, stripe } from '../../config'
 export const createStripeAccount = functions
   .region('europe-west2')
   .https.onCall(async (data, context) => {
-    console.log('createStripeAccount!!')
     const userId = context.auth?.uid
     const token = context.auth?.token
 
@@ -40,7 +39,7 @@ export const createStripeAccount = functions
 
       return stripeAccountId
     } catch (e) {
-      console.error(e)
+      functions.logger.error(e)
     }
     return null
   })

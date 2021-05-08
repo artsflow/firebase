@@ -6,14 +6,12 @@ import { getStripeAccount } from '../../utils'
 export const getPayoutsData = functions
   .region('europe-west2')
   .https.onCall(async (data, context) => {
-    console.log('getPayoutsData!!')
     const userId = context.auth?.uid
 
     if (!userId) return false
 
     const stripeAccount = await getStripeAccount(userId)
     if (!stripeAccount) return null
-    console.log('stripeAccount', stripeAccount.id)
 
     try {
       const bankAccounts = await stripe.accounts.listExternalAccounts(stripeAccount.id)
@@ -24,7 +22,7 @@ export const getPayoutsData = functions
         list,
       }
     } catch (error) {
-      console.error('ERROR:getPayoutsData:', error)
+      functions.logger.error(error)
       return error
     }
   })

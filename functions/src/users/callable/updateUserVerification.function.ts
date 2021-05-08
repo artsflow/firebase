@@ -6,7 +6,6 @@ import { getStripeAccount } from '../../utils'
 export const updateUserVerification = functions
   .region('europe-west2')
   .https.onCall(async (data, context) => {
-    console.log('updateUserVerification!')
     const userId = context.auth?.uid
 
     if (!userId) return false

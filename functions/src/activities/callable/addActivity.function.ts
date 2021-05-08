@@ -5,7 +5,6 @@ import { db, serverTimestamp } from '../../config'
 import { nanoid } from '../../utils'
 
 export const addActivity = functions.region('europe-west2').https.onCall(async (data, context) => {
-  console.log('addActivity!!', data)
   const userId = context.auth?.uid
 
   if (!userId) return false
