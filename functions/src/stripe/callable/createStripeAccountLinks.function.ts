@@ -1,20 +1,18 @@
 import * as functions from 'firebase-functions'
 
 import { stripe, ARTSFLOW_APP_URL } from '../../config'
-import { getOrCreateStripeAccount } from '../../utils'
 
 export const createStripeAccountLinks = functions
   .region('europe-west2')
   .https.onCall(async (data, context) => {
-    console.log('createStripeAccountLinks!!')
+    console.log('createStripeAccountLinks!!', data)
     const userId = context.auth?.uid
+    const { stripeAccountId } = data
 
-    if (!userId) return false
-
-    const stripeAccount = await getOrCreateStripeAccount(userId)
+    if (!userId || !stripeAccountId) return false
 
     const accountLinks = await stripe.accountLinks.create({
-      account: stripeAccount.id,
+      account: stripeAccountId,
       refresh_url: ARTSFLOW_APP_URL,
       return_url: `${ARTSFLOW_APP_URL}/return`,
       type: 'account_onboarding',

@@ -7,42 +7,6 @@ const alphabet = 'abcdefghijklmnopqrstuvwxyz1234567890'
 
 export const nanoid = customAlphabet(alphabet, 8)
 
-export const getOrCreateStripeAccount = async (userId: string) => {
-  const batch = db.batch()
-
-  const userRef = db.collection('users').doc(userId)
-  const profileRef = db.collection('profiles').doc(userId)
-  const userDoc = await userRef.get()
-  const email = userDoc.data()?.email
-  const stripeAccountId = userDoc.data()?.stripeAccountId
-
-  if (stripeAccountId) return await stripe.accounts.retrieve(stripeAccountId)
-
-  const stripeAccount = await stripe.accounts.create({
-    country: 'GB',
-    type: 'custom',
-    capabilities: {
-      card_payments: {
-        requested: true,
-      },
-      transfers: {
-        requested: true,
-      },
-    },
-    email,
-    metadata: {
-      userId,
-    },
-  })
-
-  batch.update(userRef, { stripeAccountId: stripeAccount.id, isVerified: false })
-  batch.update(profileRef, { isVerified: false })
-
-  await batch.commit()
-
-  return stripeAccount
-}
-
 export const getStripeAccount = async (userId: string) => {
   const { data } = await getDocument(userId, 'users')
   const { stripeAccountId } = data

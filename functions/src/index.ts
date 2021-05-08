@@ -10,6 +10,7 @@ export * from './activities/callable/deleteActivity.function'
 export * from './activities/callable/editActivity.function'
 export * from './activities/callable/setActivityStatus.function'
 
+export * from './stripe/callable/createStripeAccount.function'
 export * from './stripe/callable/createStripeAccountLinks.function'
 export * from './stripe/callable/getStripeAccountStatus.function'
 export * from './stripe/callable/addStripeExternalAccount.function'
