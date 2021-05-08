@@ -7,39 +7,40 @@ export const createStripeAccount = functions
   .https.onCall(async (data, context) => {
     console.log('createStripeAccount!!')
     const userId = context.auth?.uid
+    const token = context.auth?.token
 
     if (!userId) return false
 
-    const userRef = db.collection('users').doc(userId)
-    const profileRef = db.collection('profiles').doc(userId)
-    const userDoc = await userRef.get()
-    const email = userDoc.data()?.email
-
-    const stripeAccount = await stripe.accounts.create({
-      country: 'GB',
-      type: 'custom',
-      capabilities: {
-        card_payments: {
-          requested: true,
+    try {
+      const stripeAccount = await stripe.accounts.create({
+        country: 'GB',
+        type: 'custom',
+        capabilities: {
+          card_payments: {
+            requested: true,
+          },
+          transfers: {
+            requested: true,
+          },
         },
-        transfers: {
-          requested: true,
+        email: token?.email,
+        metadata: {
+          userId,
         },
-      },
-      email,
-      metadata: {
-        userId,
-      },
-    })
+      })
 
-    const stripeAccountId = stripeAccount.id
+      const stripeAccountId = stripeAccount.id
 
-    const batch = db.batch()
+      const batch = db.batch()
+      const userRef = db.collection('users').doc(userId)
+      const profileRef = db.collection('profiles').doc(userId)
+      batch.update(userRef, { stripeAccountId, isVerified: false })
+      batch.update(profileRef, { isVerified: false })
+      await batch.commit()
 
-    batch.update(userRef, { stripeAccountId, isVerified: false })
-    batch.update(profileRef, { isVerified: false })
-
-    await batch.commit()
-
-    return stripeAccountId
+      return stripeAccountId
+    } catch (e) {
+      console.error(e)
+    }
+    return null
   })
