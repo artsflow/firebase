@@ -4,6 +4,10 @@ import { db, serverTimestamp } from '../../config'
 import { getStripeAccount } from '../../utils'
 
 export const updateUserVerification = functions
+  .runWith({
+    timeoutSeconds: 300,
+    memory: '1GB',
+  })
   .region('europe-west2')
   .https.onCall(async (data, context) => {
     const userId = context.auth?.uid
@@ -29,6 +33,8 @@ export const updateUserVerification = functions
         verifiedAt: serverTimestamp(),
         isVerified: true,
       }
+
+      // TODO: create postmark server for newsletters
 
       batch.update(userRef, verifiedData)
       batch.update(profileRef, verifiedData)
