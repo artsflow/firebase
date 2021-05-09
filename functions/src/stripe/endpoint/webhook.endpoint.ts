@@ -4,6 +4,10 @@ import { db, serverTimestamp, stripe, STRIPE_WEBHOOK_SECRET } from '../../config
 import { getDocument } from '../../utils'
 
 export const webhook = functions
+  .runWith({
+    timeoutSeconds: 300,
+    memory: '1GB',
+  })
   .region('europe-west2')
   .https.onRequest(async (request, response) => {
     const sig = request.headers['stripe-signature'] as any
