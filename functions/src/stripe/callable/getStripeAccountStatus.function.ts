@@ -3,6 +3,10 @@ import * as functions from 'firebase-functions'
 import { getStripeAccount } from '../../utils'
 
 export const getStripeAccountStatus = functions
+  .runWith({
+    timeoutSeconds: 300,
+    memory: '1GB',
+  })
   .region('europe-west2')
   .https.onCall(async (data, context) => {
     const userId = context.auth?.uid

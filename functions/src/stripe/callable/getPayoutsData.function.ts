@@ -4,6 +4,10 @@ import { stripe } from '../../config'
 import { getStripeAccount } from '../../utils'
 
 export const getPayoutsData = functions
+  .runWith({
+    timeoutSeconds: 300,
+    memory: '1GB',
+  })
   .region('europe-west2')
   .https.onCall(async (data, context) => {
     const userId = context.auth?.uid
