@@ -13,10 +13,10 @@ export const updateProfile = functions
     const userRef = db.collection('users').doc(userId)
     const profileRef = db.collection('profiles').doc(userId)
 
-    const { firstName, lastName, address, bio } = data
+    const { firstName, lastName, bio } = data
     const displayName = `${firstName} ${lastName}`
 
-    batch.update(userRef, { firstName, lastName, address, displayName })
+    batch.update(userRef, { firstName, lastName, displayName })
     batch.update(profileRef, { firstName, lastName, bio, displayName })
 
     return batch.commit()
