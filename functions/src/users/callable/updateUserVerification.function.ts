@@ -15,6 +15,10 @@ export const updateUserVerification = functions
 
     if (!userId) return false
 
+    const { data: userData } = await getDocument(userId, 'users')
+
+    if (userData.isVerified) return true
+
     const stripeAccount = (await getStripeAccount(userId)) as any
 
     if (!stripeAccount) return null
@@ -37,9 +41,7 @@ export const updateUserVerification = functions
 
       // TODO: create postmark server for newsletters
 
-      const { data: userData } = await getDocument(userId, 'users')
       const { email, firstName, displayName } = userData
-
       notifyCreativeVerified({ email, name: firstName || displayName })
 
       batch.update(userRef, verifiedData)
