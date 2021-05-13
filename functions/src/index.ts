@@ -2,6 +2,7 @@ export * from './users/reactive/onCreateUserRecord.function'
 export * from './users/callable/updateAvatarUrl.function'
 export * from './users/callable/updateProfile.function'
 export * from './users/callable/updateUserVerification.function'
+export * from './users/callable/checkUserFirstTime.function'
 
 export * from './activities/reactive/onDeleteActivity.function'
 export * from './activities/reactive/onDeleteLocation.function'
