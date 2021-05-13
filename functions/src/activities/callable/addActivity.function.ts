@@ -2,7 +2,8 @@ import * as functions from 'firebase-functions'
 import { omit } from 'lodash'
 
 import { db, serverTimestamp } from '../../config'
-import { nanoid } from '../../utils'
+import { nanoid, getDocument } from '../../utils'
+import { notifyAddActivity } from '../../notifications'
 
 export const addActivity = functions.region('europe-west2').https.onCall(async (data, context) => {
   const userId = context.auth?.uid
@@ -32,6 +33,11 @@ export const addActivity = functions.region('europe-west2').https.onCall(async (
 
   // TODO: try catch errors
   await batch.commit()
+
+  const { data: userData } = await getDocument(userId, 'users')
+  const { email, firstName, displayName } = userData
+
+  notifyAddActivity({ id, title: data.title, email, name: firstName || displayName })
 
   return id
 })
