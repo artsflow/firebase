@@ -1,7 +1,8 @@
 import * as functions from 'firebase-functions'
 
 import { db, serverTimestamp } from '../../config'
-import { getStripeAccount } from '../../utils'
+import { getStripeAccount, getDocument } from '../../utils'
+import { notifyCreativeVerified } from '../../notifications'
 
 export const updateUserVerification = functions
   .runWith({
@@ -35,6 +36,11 @@ export const updateUserVerification = functions
       }
 
       // TODO: create postmark server for newsletters
+
+      const { data: userData } = await getDocument(userId, 'users')
+      const { email, firstName, displayName } = userData
+
+      notifyCreativeVerified({ email, name: firstName || displayName })
 
       batch.update(userRef, verifiedData)
       batch.update(profileRef, verifiedData)
