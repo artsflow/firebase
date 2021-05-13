@@ -1,7 +1,9 @@
 import * as functions from 'firebase-functions'
+import { format } from 'date-fns'
 
 import { db, serverTimestamp, stripe, STRIPE_WEBHOOK_SECRET } from '../../config'
 import { getDocument } from '../../utils'
+import { notifyCreativeNewBooking, notifyUserNewBooking } from '../../notifications'
 
 export const webhook = functions
   .runWith({
@@ -26,7 +28,7 @@ export const webhook = functions
   })
 
 const createBooking = async (data: any) => {
-  const { userId, phone } = data.metadata
+  const { userId, phone, creativeId, title, name, email, dateString } = data.metadata
   const { data: user, snapshot: userSnapshot } = await getDocument(userId, 'users')
   if (!user.phone) await userSnapshot.ref.set({ phone }, { merge: true })
 
@@ -38,5 +40,21 @@ const createBooking = async (data: any) => {
   }
 
   await db.collection('bookings').add(bookingData)
-  // TODO: send email to user  and creative
+
+  const { data: creative } = await getDocument(creativeId, 'users')
+  const activityDate = format(new Date(dateString), 'dd MMM, yyy - HH:mm')
+
+  const notifyCreativeData = {
+    title,
+    name: creative.firstName,
+    email: creative.email,
+    activityDate,
+    userName: name,
+    userEmail: email,
+  }
+
+  const creativeName = `${creative.displayName}`
+
+  notifyCreativeNewBooking(notifyCreativeData)
+  notifyUserNewBooking({ title, name, email, activityDate, creativeName })
 }

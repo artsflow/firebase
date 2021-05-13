@@ -4,7 +4,7 @@ import { POSTMARK_SERVER_TOKEN, ARTSFLOW_WEBSITE_URL } from './config'
 
 const client = new Client(POSTMARK_SERVER_TOKEN)
 
-interface Props {
+interface AddActivityProps {
   id: string
   title: string
   name: string
@@ -13,7 +13,7 @@ interface Props {
 
 const FROM_EMAIL = 'hello@artsflow.com'
 
-export const notifyAddActivity = ({ id, title, name, email }: Props) => {
+export const notifyAddActivity = ({ id, title, name, email }: AddActivityProps) => {
   sendEmail(email, 'add-activity', {
     name,
     activity_title: title,
@@ -27,6 +27,55 @@ export const notifyNewCreativeSignup = ({ name, email }: { name: string; email: 
 
 export const notifyCreativeVerified = ({ name, email }: { name: string; email: string }) => {
   sendEmail(email, 'verified-creative', { name })
+}
+
+interface NewCreativeBookingProps {
+  title: string
+  name: string
+  email: string
+  activityDate: string
+  userName: string
+  userEmail: string
+}
+
+export const notifyCreativeNewBooking = ({
+  title,
+  name,
+  email,
+  activityDate,
+  userName,
+  userEmail,
+}: NewCreativeBookingProps) => {
+  sendEmail(email, 'creative-new-booking', {
+    name,
+    activity_title: title,
+    activity_date: activityDate,
+    user_name: userName,
+    user_email: userEmail,
+  })
+}
+
+interface NewUserBookingProps {
+  title: string
+  name: string
+  email: string
+  activityDate: string
+  creativeName: string
+}
+
+export const notifyUserNewBooking = ({
+  title,
+  name,
+  email,
+  activityDate,
+  creativeName,
+}: NewUserBookingProps) => {
+  sendEmail(email, 'user-new-booking', {
+    name,
+    activity_title: title,
+    activity_date: activityDate,
+    creative_name: creativeName,
+  })
 }
 
 const sendEmail = (to: string, templateAlias: string, templateModel: any) => {
