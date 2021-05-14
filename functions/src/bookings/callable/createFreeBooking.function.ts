@@ -1,15 +1,17 @@
 import * as functions from 'firebase-functions'
-import { fromUnixTime } from 'date-fns'
+import { fromUnixTime, format, subDays, subHours } from 'date-fns'
 
 import { getDocument } from '../../utils'
 import { db, serverTimestamp } from '../../config'
+import { notifyCreativeNewBooking, notifyUserNewBooking } from '../../notifications'
+import { scheduleTask } from '../../system/workers'
 
 export const createFreeBooking = functions
   .region('europe-west2')
   .https.onCall(async (data, context) => {
     const userId = context.auth?.uid as any
 
-    const { activityId, timestamp, phone, name } = data
+    const { activityId, timestamp, phone, name, title } = data
 
     if (!userId || !activityId || !timestamp) return false
 
@@ -41,7 +43,33 @@ export const createFreeBooking = functions
     if (!user.phone) await userSnapshot.ref.set({ phone }, { merge: true })
 
     await db.collection('bookings').add(bookingData)
-    // TODO: send email to user  and creative
+
+    const activityDate = format(new Date(dateString), 'dd MMM, yyy - HH:mm')
+
+    const notifyCreativeData = {
+      title,
+      name: creative.firstName,
+      email: creative.email,
+      activityDate,
+      userName: name,
+      userEmail: email,
+    }
+
+    const creativeName = `${creative.displayName}`
+    notifyCreativeNewBooking(notifyCreativeData)
+    notifyUserNewBooking({ title, name, email, activityDate, creativeName })
+
+    await scheduleTask({
+      performAt: subHours(new Date(dateString), 1),
+      worker: 'notifyUserScheduledBooking',
+      options: { title, name, email, activityDate, creativeName, startsIn: '1 hour' },
+    })
+
+    await scheduleTask({
+      performAt: subDays(new Date(dateString), 1),
+      worker: 'notifyUserScheduledBooking',
+      options: { title, name, email, activityDate, creativeName, startsIn: '1 day' },
+    })
 
     return true
   })
