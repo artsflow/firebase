@@ -1,9 +1,10 @@
 import * as functions from 'firebase-functions'
-import { format } from 'date-fns'
+import { format, subDays, subHours } from 'date-fns'
 
 import { db, serverTimestamp, stripe, STRIPE_WEBHOOK_SECRET } from '../../config'
 import { getDocument } from '../../utils'
 import { notifyCreativeNewBooking, notifyUserNewBooking } from '../../notifications'
+import { scheduleTask } from '../../system/workers'
 
 export const webhook = functions
   .runWith({
@@ -57,4 +58,16 @@ const createBooking = async (data: any) => {
 
   notifyCreativeNewBooking(notifyCreativeData)
   notifyUserNewBooking({ title, name, email, activityDate, creativeName })
+
+  await scheduleTask({
+    performAt: subHours(new Date(dateString), 1),
+    worker: 'notifyUserScheduledBooking',
+    options: { title, name, email, activityDate, creativeName, startsIn: '1 hour' },
+  })
+
+  await scheduleTask({
+    performAt: subDays(new Date(dateString), 1),
+    worker: 'notifyUserScheduledBooking',
+    options: { title, name, email, activityDate, creativeName, startsIn: '1 day' },
+  })
 }

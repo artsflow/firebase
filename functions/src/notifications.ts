@@ -78,6 +78,32 @@ export const notifyUserNewBooking = ({
   })
 }
 
+export interface UserScheduledBookingProps {
+  title: string
+  name: string
+  email: string
+  activityDate: string
+  creativeName: string
+  startsIn: string
+}
+
+export const notifyUserScheduledBooking = ({
+  title,
+  name,
+  email,
+  activityDate,
+  creativeName,
+  startsIn,
+}: UserScheduledBookingProps) => {
+  sendEmail(email, 'user-scheduled-booking', {
+    name,
+    activity_title: title,
+    activity_date: activityDate,
+    creative_name: creativeName,
+    starts_in: startsIn,
+  })
+}
+
 const sendEmail = (to: string, templateAlias: string, templateModel: any) => {
   client.sendEmailWithTemplate({
     From: FROM_EMAIL,
