@@ -4,7 +4,8 @@ import { db, admin } from '../../config'
 import { workers } from '../workers'
 
 export const taskRunner = functions
-  .runWith({ memory: '2GB' })
+  .runWith({ memory: '2GB', timeoutSeconds: 300 })
+  .region('europe-west2')
   .pubsub.schedule('* * * * *')
   .onRun(async () => {
     const now = admin.firestore.Timestamp.now()
