@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions'
 
 import { db, stripe, STRIPE_WEBHOOK_SECRET_CONNECT } from '../../config'
+import { trackUpdatePerson } from '../../analytics'
 
 export const webhookConnect = functions
   .runWith({ timeoutSeconds: 300, memory: '1GB' })
@@ -79,6 +80,8 @@ const updatePerson = async (data: any) => {
     batch.update(profileRef, profileData)
 
     batch.commit()
+
+    trackUpdatePerson({ userId, ...userData })
     // functions.logger.info(data)
   }
 }

@@ -3,6 +3,7 @@ import * as functions from 'firebase-functions'
 import { db, serverTimestamp } from '../../config'
 import { getStripeAccount, getDocument } from '../../utils'
 import { notifyCreativeVerified } from '../../notifications'
+import { trackCompleteVerification } from '../../analytics'
 
 export const updateUserVerification = functions
   .runWith({ timeoutSeconds: 300, memory: '1GB' })
@@ -40,6 +41,7 @@ export const updateUserVerification = functions
 
       const { email, firstName, displayName } = userData
       notifyCreativeVerified({ email, name: firstName || displayName })
+      trackCompleteVerification(userId)
 
       batch.update(userRef, verifiedData)
       batch.update(profileRef, verifiedData)

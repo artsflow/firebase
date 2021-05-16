@@ -29,8 +29,10 @@
   },
   "main": "lib/index.js",
   "dependencies": {
+    "@types/analytics-node": "^3.1.4",
     "@types/postmark": "^2.0.3",
     "agora-access-token": "^2.0.4",
+    "analytics-node": "^4.0.1",
     "cors": "^2.8.5",
     "date-fns": "^2.21.2",
     "firebase-admin": "^9.6.0",
