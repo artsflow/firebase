@@ -24,3 +24,8 @@ export const trackUpdatePerson = ({ userId, ...rest }: PersonProps) => {
   analytics.identify({ userId, traits: { ...rest } })
   analytics.track({ userId, event: 'Person Updated' })
 }
+
+export const trackCreateActivity = (activity: any) => {
+  const { userId } = activity
+  analytics.track({ userId, event: 'Activity Created', properties: { activity } })
+}

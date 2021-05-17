@@ -4,6 +4,7 @@ import { omit } from 'lodash'
 import { db, serverTimestamp } from '../../config'
 import { nanoid, getDocument } from '../../utils'
 import { notifyAddActivity } from '../../notifications'
+import { trackCreateActivity } from '../../analytics'
 
 export const addActivity = functions.region('europe-west2').https.onCall(async (data, context) => {
   const userId = context.auth?.uid
@@ -33,6 +34,8 @@ export const addActivity = functions.region('europe-west2').https.onCall(async (
 
   // TODO: try catch errors
   await batch.commit()
+
+  trackCreateActivity({ userId, ...data })
 
   const { data: userData } = await getDocument(userId, 'users')
   const { email, firstName, displayName } = userData
