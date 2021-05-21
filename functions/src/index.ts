@@ -17,7 +17,7 @@ export * from './stripe/callable/getStripeAccountStatus.function'
 export * from './stripe/callable/addStripeExternalAccount.function'
 export * from './stripe/callable/getPayoutsData.function'
 export * from './stripe/callable/getBalance.function'
-export * from './stripe/callable/getPaymentIntent.function'
+export * from './stripe/callable/createPaymentIntent.function'
 export * from './stripe/endpoint/webhook.endpoint'
 export * from './stripe/endpoint/webhook-connect.endpoint'
 
