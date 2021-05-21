@@ -8,6 +8,10 @@ export const getStripeAccountStatus = functions
   .https.onCall(async (data, context) => {
     const userId = context.auth?.uid
 
+    if (data.warmup) {
+      return { success: true }
+    }
+
     if (!userId) return false
 
     const stripeAccount = (await getStripeAccount(userId)) as any

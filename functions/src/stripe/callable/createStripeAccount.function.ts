@@ -9,6 +9,10 @@ export const createStripeAccount = functions
     const userId = context.auth?.uid
     const token = context.auth?.token
 
+    if (data.warmup) {
+      return { success: true }
+    }
+
     if (!userId) return false
 
     try {

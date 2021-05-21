@@ -9,6 +9,10 @@ import { trackCreateActivity } from '../../analytics'
 export const addActivity = functions.region('europe-west2').https.onCall(async (data, context) => {
   const userId = context.auth?.uid
 
+  if (data.warmup) {
+    return { success: true }
+  }
+
   if (!userId) return false
 
   const id = nanoid()

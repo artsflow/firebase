@@ -11,6 +11,10 @@ export const updateUserVerification = functions
   .https.onCall(async (data, context) => {
     const userId = context.auth?.uid
 
+    if (data.warmup) {
+      return { success: true }
+    }
+
     if (!userId) return false
 
     const { data: userData } = await getDocument(userId, 'users')

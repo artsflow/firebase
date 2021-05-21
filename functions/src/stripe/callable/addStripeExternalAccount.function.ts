@@ -10,6 +10,10 @@ export const addStripeExternalAccount = functions
     const userId = context.auth?.uid
     const { account } = data
 
+    if (data.warmup) {
+      return { success: true }
+    }
+
     if (!userId) return false
 
     const stripeAcc = await getStripeAccount(userId)

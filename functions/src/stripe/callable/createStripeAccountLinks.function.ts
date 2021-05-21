@@ -9,6 +9,10 @@ export const createStripeAccountLinks = functions
     const userId = context.auth?.uid
     const { stripeAccountId } = data
 
+    if (data.warmup) {
+      return { success: true }
+    }
+
     if (!userId || !stripeAccountId) return false
 
     const accountLinks = await stripe.accountLinks.create({
