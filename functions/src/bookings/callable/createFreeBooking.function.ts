@@ -63,6 +63,8 @@ export const createFreeBooking = functions
     notifyCreativeNewBooking(notifyCreativeData)
     notifyUserNewBooking({ title, name, email, activityDate, creativeName })
 
+    // TODO: add bookingId to options in order to not deliver when cancelled
+
     await scheduleTask({
       performAt: subHours(new Date(dateString), 1),
       worker: 'notifyUserScheduledBooking',

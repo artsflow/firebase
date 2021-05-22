@@ -25,3 +25,5 @@ export * from './bookings/callable/createFreeBooking.function'
 
 export * from './system/reactive/taskRunner.function'
 export * from './system/reactive/activityPageViewsToBigQuery.pubsub'
+
+export * from './dashboard/callable/getActivityViews.function'
