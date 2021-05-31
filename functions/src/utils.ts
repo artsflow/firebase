@@ -48,3 +48,5 @@ export const getDocument = async (id: string, collection: string) => {
   const data = snapshot.data() as any
   return { data: { ...data, id }, snapshot }
 }
+
+export const isEmailValid = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)

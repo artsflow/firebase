@@ -27,3 +27,9 @@ export * from './system/reactive/taskRunner.function'
 export * from './system/reactive/activityPageViewsToBigQuery.pubsub'
 
 export * from './dashboard/callable/getActivityViews.function'
+
+export * from './newsletters/callable/sendNewsletter.function'
+export * from './newsletters/callable/getServerStats.function'
+export * from './newsletters/callable/giveConsent.function'
+export * from './newsletters/callable/importCSV.function'
+export * from './newsletters/endpoint/postmarkServerWebhook.function'

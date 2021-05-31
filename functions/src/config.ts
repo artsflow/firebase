@@ -19,6 +19,7 @@ const STRIPE_WEBHOOK_SECRET_CONNECT = functions.config().stripe.webhook_connect
 
 export const POSTMARK_ACCOUNT_TOKEN = functions.config().postmark.account_token
 export const POSTMARK_SERVER_TOKEN = functions.config().postmark.server_token
+export const POSTMARK_WEBHOOK_TOKEN = functions.config().postmark.webhook_token
 
 export const SEGMENT_KEY = functions.config().segment.key
 

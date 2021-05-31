@@ -13,5 +13,5 @@ export const updateAvatarUrl = functions
 
     const profileRef = db.collection('profiles').doc(userId)
 
-    return profileRef.set({ photoURL }, { merge: true })
+    return profileRef.update({ photoURL })
   })
