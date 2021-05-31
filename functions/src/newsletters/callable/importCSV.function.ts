@@ -4,6 +4,8 @@ import { uniqBy, differenceBy } from 'lodash'
 import { db, serverTimestamp } from '../../config'
 import { isEmailValid } from '../../utils'
 
+const AUDIENCE_LIMIT = 500
+
 export const importCSV = functions.region('europe-west2').https.onCall(async (list, context) => {
   const userId = context.auth?.uid
 
@@ -23,7 +25,12 @@ export const importCSV = functions.region('europe-west2').https.onCall(async (li
 
   const batch = db.batch()
 
-  final.forEach(({ name, email }) => {
+  const contactsLeft = AUDIENCE_LIMIT - audience.length
+  const isOveLimit = final.length > contactsLeft
+
+  const size = isOveLimit ? AUDIENCE_LIMIT - audience.length : final.length
+
+  final.slice(0, size).forEach(({ name, email }) => {
     const aRef = db.collection('audience').doc()
     batch.set(aRef, { name, email, userId, createdAt: serverTimestamp() })
   })
