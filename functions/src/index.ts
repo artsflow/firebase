@@ -29,6 +29,8 @@ export * from './system/reactive/activityPageViewsToBigQuery.pubsub'
 export * from './dashboard/callable/getActivityViews.function'
 
 export * from './newsletters/callable/sendNewsletter.function'
+export * from './newsletters/callable/getSentMessages.function'
+export * from './newsletters/callable/getSentMessage.function'
 export * from './newsletters/callable/getServerStats.function'
 export * from './newsletters/callable/giveConsent.function'
 export * from './newsletters/callable/importCSV.function'

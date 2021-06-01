@@ -20,11 +20,9 @@ export const sendNewsletter = functions
 
     if (!userId) return false
 
-    const m = await client.getOutboundMessages({ count: 10, offset: 0 })
-
     // const m = await client.getOutboundMessageDetails('42474ca9-0acf-4b43-8b51-0d5274d50297')
 
-    return m
+    return
 
     functions.logger.info(context.auth, data)
     const { body, subject } = data
