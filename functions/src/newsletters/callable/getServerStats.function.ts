@@ -17,16 +17,17 @@ export const getServerStats = functions
     const client = new ServerClient(POSTMARK_SERVER_TOKEN)
 
     const calls: Promise<any>[] = [
-      client.getBounceCounts(),
       client.getSpamComplaintsCounts(),
       client.getSentCounts(),
-      client.getTrackedEmailCounts(),
       client.getEmailOpenCounts(),
+      client.getTrackedEmailCounts(),
       client.getClickCounts(),
       client.getSuppressions('newsletter'),
     ]
 
     const stats = await Promise.all(calls)
 
-    return stats
+    const [spam, sent, open, tracked, clicks, suppressions] = stats
+
+    return { spam, sent, tracked, open, clicks, suppressions }
   })
