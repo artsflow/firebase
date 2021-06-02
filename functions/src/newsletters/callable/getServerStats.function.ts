@@ -20,14 +20,13 @@ export const getServerStats = functions
       client.getSpamComplaintsCounts(),
       client.getSentCounts(),
       client.getEmailOpenCounts(),
-      client.getTrackedEmailCounts(),
       client.getClickCounts(),
       client.getSuppressions('newsletter'),
     ]
 
     const stats = await Promise.all(calls)
 
-    const [spam, sent, open, tracked, clicks, suppressions] = stats
+    const [spam, sent, open, clicks, suppressions] = stats
 
-    return { spam, sent, tracked, open, clicks, suppressions }
+    return { spam, sent, open, clicks, suppressions }
   })
