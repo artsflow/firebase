@@ -2,9 +2,8 @@ import * as functions from 'firebase-functions'
 import { ServerClient, Models } from 'postmark'
 import { uniqBy } from 'lodash'
 
-import { db, serverTimestamp, POSTMARK_SERVER_TOKEN } from '../../config'
-
-const client = new ServerClient(POSTMARK_SERVER_TOKEN)
+import { db, serverTimestamp } from '../../config'
+import { getPostmarkServerToken } from '../../utils'
 
 export const sendNewsletter = functions
   .region('europe-west2')
@@ -35,6 +34,9 @@ export const sendNewsletter = functions
       TrackOpens: true,
       TrackLinks: Models.LinkTrackingOptions.HtmlAndText,
     }
+
+    const token = await getPostmarkServerToken(userId)
+    const client = new ServerClient(token)
 
     if (to?.value === 'myself') {
       await client.sendEmail(newsletter)

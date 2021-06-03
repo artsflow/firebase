@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions'
 import { ServerClient } from 'postmark'
 
-import { POSTMARK_SERVER_TOKEN } from '../../config'
+import { getPostmarkServerToken } from '../../utils'
 
 export const getServerStats = functions
   .region('europe-west2')
@@ -14,7 +14,8 @@ export const getServerStats = functions
 
     if (!userId) return false
 
-    const client = new ServerClient(POSTMARK_SERVER_TOKEN)
+    const token = await getPostmarkServerToken(userId)
+    const client = new ServerClient(token)
 
     const calls: Promise<any>[] = [
       client.getSpamComplaintsCounts(),
@@ -22,11 +23,12 @@ export const getServerStats = functions
       client.getEmailOpenCounts(),
       client.getClickCounts(),
       client.getSuppressions('newsletter'),
+      client.getBounceCounts(),
     ]
 
     const stats = await Promise.all(calls)
 
-    const [spam, sent, open, clicks, suppressions] = stats
+    const [spam, sent, open, clicks, suppressions, bounced] = stats
 
-    return { spam, sent, open, clicks, suppressions }
+    return { spam, sent, open, clicks, suppressions, bounced }
   })
