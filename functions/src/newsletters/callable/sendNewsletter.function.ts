@@ -78,7 +78,7 @@ export const sendNewsletter = functions
 
     await client.sendEmailBatch(batchList)
 
-    return { ok: true }
+    return { ok: true, newsletterId }
   })
 
 const getBookings = async (userId: string) => {
