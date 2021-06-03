@@ -3,7 +3,7 @@ import { ServerClient, Models } from 'postmark'
 import { uniqBy } from 'lodash'
 
 import { db, serverTimestamp } from '../../config'
-import { getPostmarkServerToken } from '../../utils'
+import { getPostmarkServerToken, getDocument } from '../../utils'
 
 export const sendNewsletter = functions
   .region('europe-west2')
@@ -17,6 +17,9 @@ export const sendNewsletter = functions
     }
 
     if (!userId) return false
+
+    const { data: user } = await getDocument(userId, 'users')
+    if (!user.isVerified) return { ok: false }
 
     const { to, body, subject } = data
 
