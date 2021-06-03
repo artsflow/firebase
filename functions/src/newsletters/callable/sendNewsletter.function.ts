@@ -1,9 +1,8 @@
 import * as functions from 'firebase-functions'
-import { ServerClient } from 'postmark'
+import { ServerClient, Models } from 'postmark'
+import { uniqBy } from 'lodash'
 
-// import { getDocument } from '../../utils'
-// import { db, serverTimestamp } from '../../config'
-import { POSTMARK_SERVER_TOKEN } from '../../config'
+import { db, serverTimestamp, POSTMARK_SERVER_TOKEN } from '../../config'
 
 const client = new ServerClient(POSTMARK_SERVER_TOKEN)
 
@@ -11,8 +10,8 @@ export const sendNewsletter = functions
   .region('europe-west2')
   .https.onCall(async (data, context) => {
     const userId = context.auth?.uid as any
-    const userName = 'Jane Smith'
-    const userEmail = 'radu@artsflow.com'
+    const userName = context.auth?.token.name
+    const userEmail = context.auth?.token.email
 
     if (data.warmup) {
       return { success: true }
@@ -20,27 +19,77 @@ export const sendNewsletter = functions
 
     if (!userId) return false
 
-    // const m = await client.getOutboundMessageDetails('42474ca9-0acf-4b43-8b51-0d5274d50297')
+    const { to, body, subject } = data
 
-    return
-
-    functions.logger.info(context.auth, data)
-    const { body, subject } = data
-
-    // save newsletters to firestore
-    const newsletterId = 'zxc'
+    functions.logger.info(to?.value)
 
     const newsletter = {
       From: `${userName}<${userId}@artsflow.com>`,
       ReplyTo: userEmail,
-      To: 'hello@42tech.co',
+      To: userEmail,
       Subject: subject,
       HtmlBody: body,
+      Tag: to?.value,
       MessageStream: 'newsletter',
-      Metadata: { userId, newsletterId },
+      Metadata: { userId, to: to?.value },
+      TrackOpens: true,
+      TrackLinks: Models.LinkTrackingOptions.HtmlAndText,
     }
-    const res = await client.sendEmail(newsletter)
-    functions.logger.info(res)
 
-    return true
+    if (to?.value === 'myself') {
+      await client.sendEmail(newsletter)
+      return { ok: true }
+    }
+
+    let list: any = []
+
+    switch (to?.value) {
+      case 'everybody':
+        list = await getEverybody(userId)
+        break
+      case 'audience':
+        list = await getAudience(userId)
+        break
+      case 'bookings':
+        list = uniqBy(await getBookings(userId), 'email')
+        break
+      default:
+        list = uniqBy(
+          (await getBookings(userId)).filter((b: any) => b.activityId === to?.value),
+          'email'
+        )
+    }
+
+    const { id: newsletterId } = await db
+      .collection('newsletters')
+      .add({ ...data, userId, recipients: list.length, createdAt: serverTimestamp() })
+
+    const batchList = list.map(({ email }: any) => ({
+      ...newsletter,
+      To: email,
+      Tag: newsletterId,
+      Metadata: { ...newsletter.Metadata, newsletterId },
+    }))
+
+    await client.sendEmailBatch(batchList)
+
+    return { ok: true }
   })
+
+const getBookings = async (userId: string) => {
+  const ref = await db.collection('bookings').where('creativeId', '==', userId).get()
+  return ref.docs
+    .map((doc) => doc.data())
+    .map(({ name, email, activityId }) => ({ name, email, activityId }))
+}
+
+const getAudience = async (userId: string) => {
+  const ref = await db.collection('audience').where('userId', '==', userId).get()
+  return ref.docs.map((doc) => doc.data()).map(({ name, email }) => ({ name, email }))
+}
+
+const getEverybody = async (userId: string) => {
+  const bookings = await getBookings(userId)
+  const audience = await getAudience(userId)
+  return uniqBy([...bookings, ...audience], 'email')
+}
