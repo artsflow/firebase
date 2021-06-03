@@ -90,12 +90,17 @@ export const setupPostmarkServer = async (userId: string): Promise<string> => {
         },
         SpamComplaint: {
           Enabled: true,
+          IncludeContent: false,
         },
         Open: {
           Enabled: true,
           PostFirstOpenOnly: true,
         },
         Click: {
+          Enabled: true,
+        },
+        // @ts-ignore
+        SubscriptionChange: {
           Enabled: true,
         },
       },
