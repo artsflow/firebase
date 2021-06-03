@@ -11,8 +11,6 @@ export const postmarkServerWebhook = functions
       return
     }
 
-    functions.logger.info(request.body)
-
     const {
       RecordType,
       MessageID,
