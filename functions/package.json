@@ -11,8 +11,11 @@
     "serve": "npm run build && firebase emulators:start --import _emulator_local_data_ --export-on-exit _emulator_local_data_",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
-    "deploy": "firebase deploy --only functions",
-    "deploy:staging": "firebase deploy --only functions -P artsflow-staging",
+    "config:get": "firebase functions:config:get",
+    "deploy": "firebase deploy --only functions -P artsflow--staging",
+    "deploy:rules": "firebase deploy --only firestore:rules -P artsflow--staging",
+    "deploy:indexes": "firebase deploy --only firestore:indexes -P artsflow--staging",
+    "deploy:prod": "firebase deploy --only functions,firestore:rules,firestore:rules,firestore:indexes -P artsflow-com",
     "stripe:listen": "stripe listen --forward-to http://localhost:8042/artsflow--staging/europe-west2/webhook",
     "logs": "firebase functions:log",
     "prepare": "cd .. && husky install",
@@ -29,7 +32,11 @@
   },
   "main": "lib/index.js",
   "dependencies": {
+    "@google-cloud/bigquery": "^5.6.0",
+    "@types/analytics-node": "^3.1.4",
+    "@types/postmark": "^2.0.3",
     "agora-access-token": "^2.0.4",
+    "analytics-node": "^4.0.1",
     "cors": "^2.8.5",
     "date-fns": "^2.21.2",
     "firebase-admin": "^9.6.0",
@@ -37,6 +44,7 @@
     "husky": "^5.1.3",
     "lodash": "^4.17.21",
     "nanoid": "^3.1.22",
+    "postmark": "^2.7.4",
     "stripe": "^8.142.0"
   },
   "devDependencies": {

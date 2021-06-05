@@ -6,6 +6,17 @@ service cloud.firestore {
     match /betatesters/{docId} {
       allow read, write: if false;
     }
+
+    match /audience/{docId} {
+      allow read: if request.auth.uid == resource.data.userId;
+      allow write: if request.auth.uid == request.resource.data.userId;
+      allow delete: if request.auth.uid == resource.data.userId;
+    }
+
+    match /newsletters/{docId} {
+      allow read: if request.auth.uid == resource.data.userId;
+      allow write: if false;
+    }
   
     match /deleted_activities/{docId} {
       allow read, write: if false;

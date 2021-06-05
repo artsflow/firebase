@@ -3,14 +3,15 @@ import * as functions from 'firebase-functions'
 import { db, stripe } from '../../config'
 
 export const createStripeAccount = functions
-  .runWith({
-    timeoutSeconds: 300,
-    memory: '1GB',
-  })
+  .runWith({ timeoutSeconds: 300, memory: '1GB' })
   .region('europe-west2')
   .https.onCall(async (data, context) => {
     const userId = context.auth?.uid
     const token = context.auth?.token
+
+    if (data.warmup) {
+      return { success: true }
+    }
 
     if (!userId) return false
 

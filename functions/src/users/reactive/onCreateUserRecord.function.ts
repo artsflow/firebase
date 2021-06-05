@@ -14,11 +14,6 @@ export const onCreateUserRecord = functions
 
     if (!user?.email) return Promise.reject(new Error('not_auth'))
 
-    const betaTesterRef = db.collection('betatesters').doc(user.email)
-    const doc = await betaTesterRef.get()
-
-    const isBetaTester = doc.exists ? true : false
-
     const userData = {
       createdAt: serverTimestamp(),
       email: user.email,
@@ -27,7 +22,6 @@ export const onCreateUserRecord = functions
       lastName,
       emailVerified: user.emailVerified,
       provider: user.providerData[0].providerId,
-      isBetaTester,
     }
 
     const profileData = {

@@ -4,14 +4,15 @@ import { fromUnixTime } from 'date-fns'
 import { stripe, ARTSFLOW_FEE } from '../../config'
 import { getOrCreateStripeCustomer, getDocument } from '../../utils'
 
-export const getPaymentIntent = functions
-  .runWith({
-    timeoutSeconds: 300,
-    memory: '1GB',
-  })
+export const createPaymentIntent = functions
+  .runWith({ timeoutSeconds: 300, memory: '1GB' })
   .region('europe-west2')
   .https.onCall(async (data, context) => {
     const userId = context.auth?.uid as any
+
+    if (data.warmup) {
+      return { success: true }
+    }
 
     const { activityId, timestamp, phone, name } = data
 
