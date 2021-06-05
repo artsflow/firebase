@@ -23,8 +23,6 @@ export const sendNewsletter = functions
 
     const { to, body, subject } = data
 
-    functions.logger.info(to?.value)
-
     const newsletter = {
       From: `${userName}<${userId}@artsflow.com>`,
       ReplyTo: userEmail,

@@ -10,7 +10,6 @@ export const activityPageViewsToBigQuery = functions
     if (!messageBody) return
 
     const data = JSON.parse(messageBody)
-    // functions.logger.info(data)
 
     const { userId, properties, context, event } = data
 

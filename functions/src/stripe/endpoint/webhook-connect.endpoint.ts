@@ -82,7 +82,6 @@ const updatePerson = async (data: any) => {
     batch.commit()
 
     trackUpdatePerson({ userId, ...userData })
-    // functions.logger.info(data)
   }
 }
 
