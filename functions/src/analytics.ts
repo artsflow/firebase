@@ -14,6 +14,7 @@ interface PersonProps {
   firstName: string
   lastName: string
   displayName: string
+  name: string
   phone: string
   address: string
   dob: string
