@@ -81,7 +81,7 @@ const updatePerson = async (data: any) => {
 
     batch.commit()
 
-    trackUpdatePerson({ userId, ...userData })
+    trackUpdatePerson({ userId, ...{ ...userData, name: displayName } })
   }
 }
 
