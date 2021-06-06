@@ -24,7 +24,7 @@ export const sendNewsletter = functions
     const { to, body, subject } = data
 
     const newsletter = {
-      From: `${userName}<${userId}@artsflow.com>`,
+      From: `${userName}<newsletter@artsflow.com>`,
       ReplyTo: userEmail,
       To: userEmail,
       Subject: subject,
