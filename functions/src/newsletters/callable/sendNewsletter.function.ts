@@ -34,7 +34,7 @@ export const sendNewsletter = functions
       Metadata: { userId, to: to?.value },
       TrackOpens: true,
       TrackLinks: Models.LinkTrackingOptions.HtmlAndText,
-    }
+    } as any
 
     const token = await getPostmarkServerToken(userId)
     const client = new ServerClient(token)

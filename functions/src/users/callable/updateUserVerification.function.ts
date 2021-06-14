@@ -52,5 +52,5 @@ export const updateUserVerification = functions
       return batch.commit()
     }
 
-    return true
+    return Promise.resolve(true)
   })
