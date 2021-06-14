@@ -9,7 +9,6 @@ export const sendNewsletter = functions
   .region('europe-west2')
   .https.onCall(async (data, context) => {
     const userId = context.auth?.uid as any
-    const userName = context.auth?.token.name
     const userEmail = context.auth?.token.email
 
     if (data.warmup) {
@@ -24,7 +23,7 @@ export const sendNewsletter = functions
     const { to, body, subject } = data
 
     const newsletter = {
-      From: `${userName}<newsletter@artsflow.com>`,
+      From: `${user.displayName}<newsletter@artsflow.com>`,
       ReplyTo: userEmail,
       To: userEmail,
       Subject: subject,
