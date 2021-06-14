@@ -23,7 +23,7 @@ export const sendNewsletter = functions
     const { to, body, subject } = data
 
     const newsletter = {
-      From: `${user.displayName}<newsletter@artsflow.com>`,
+      From: `${user.displayName}<booking@artsflow.com>`,
       ReplyTo: userEmail,
       To: userEmail,
       Subject: subject,
