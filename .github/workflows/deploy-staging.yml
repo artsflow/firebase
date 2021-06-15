@@ -27,4 +27,4 @@ jobs:
     - name: install firebase
       run: npm i firebase-tools -g  
     - name: deploy
-      run: firebase deploy --only functions -P artsflow--staging --token ${{ secrets.GCLOUD_TOKEN }}
+      run: firebase deploy --only functions,firestore:rules,firestore:indexes -P artsflow--staging --token ${{ secrets.GCLOUD_TOKEN }}
