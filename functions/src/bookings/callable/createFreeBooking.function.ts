@@ -11,6 +11,8 @@ export const createFreeBooking = functions
   .https.onCall(async (data, context) => {
     const userId = context.auth?.uid as any
 
+    if (!data) return false
+
     if (data.warmup) {
       return { success: true }
     }
