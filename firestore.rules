@@ -7,6 +7,10 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /feedback/{docId} {
+      allow read, write, delete: if false;
+    }
+
     match /audience/{docId} {
       allow read: if request.auth.uid == resource.data.userId;
       allow write: if request.auth.uid == request.resource.data.userId;

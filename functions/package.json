@@ -13,6 +13,7 @@
     "start": "npm run shell",
     "config:get": "firebase functions:config:get",
     "deploy": "firebase deploy --only functions -P artsflow--staging",
+    "deploy:function": "firebase deploy -P artsflow--staging --only",
     "deploy:rules": "firebase deploy --only firestore:rules -P artsflow--staging",
     "deploy:indexes": "firebase deploy --only firestore:indexes -P artsflow--staging",
     "deploy:prod": "firebase deploy --only functions,firestore:rules,firestore:rules,firestore:indexes -P artsflow-com",
