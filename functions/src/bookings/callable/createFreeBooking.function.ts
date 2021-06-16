@@ -17,7 +17,7 @@ export const createFreeBooking = functions
       return { success: true }
     }
 
-    const { activityId, timestamp, phone, name, title } = data
+    const { activityId, timestamp, phone, name } = data
 
     if (!userId || !activityId || !timestamp) return false
 
@@ -28,7 +28,7 @@ export const createFreeBooking = functions
     const dateString = fromUnixTime(timestamp).toString()
 
     const email = user.email
-    const activityTitle = activity.title
+    const title = activity.title
     const amount = 0
 
     const bookingData = {
@@ -40,7 +40,7 @@ export const createFreeBooking = functions
       activityId,
       timestamp: Number(timestamp),
       dateString,
-      title: activityTitle,
+      title,
       creativeId: creative.id,
       amount,
       createdAt: serverTimestamp(),
@@ -68,12 +68,14 @@ export const createFreeBooking = functions
     // TODO: add bookingId to options in order to not deliver when cancelled
 
     await scheduleTask({
+      createdAt: serverTimestamp(),
       performAt: subHours(new Date(dateString), 1),
       worker: 'notifyUserScheduledBooking',
       options: { title, name, email, activityDate, creativeName, startsIn: '1 hour' },
     })
 
     await scheduleTask({
+      createdAt: serverTimestamp(),
       performAt: subDays(new Date(dateString), 1),
       worker: 'notifyUserScheduledBooking',
       options: { title, name, email, activityDate, creativeName, startsIn: '1 day' },
