@@ -59,12 +59,14 @@ const createBooking = async (data: any) => {
   // TODO: add bookingId to options in order to not deliver when cancelled
 
   await scheduleTask({
+    createdAt: serverTimestamp(),
     performAt: subHours(new Date(dateString), 1),
     worker: 'notifyUserScheduledBooking',
     options: { title, name, email, activityDate, creativeName, startsIn: '1 hour' },
   })
 
   await scheduleTask({
+    createdAt: serverTimestamp(),
     performAt: subDays(new Date(dateString), 1),
     worker: 'notifyUserScheduledBooking',
     options: { title, name, email, activityDate, creativeName, startsIn: '1 day' },
