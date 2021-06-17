@@ -64,7 +64,8 @@ export const createFreeBooking = functions
     const creativeName = `${creative.displayName}`
 
     notifyCreativeNewBooking(notifyCreativeData)
-    notifyUserNewBooking({
+
+    const notifyUserData = {
       id: activity.id,
       image: activity.images[0],
       title,
@@ -74,7 +75,9 @@ export const createFreeBooking = functions
       creativeName,
       presenceUrl: activity.activityPresence === 'Online' ? activity.presenceUrl : '',
       price: activity.monetizationType === 'Free' ? 'Free to join' : `£${activity.price} paid`,
-    })
+    }
+
+    notifyUserNewBooking(notifyUserData)
 
     // TODO: add bookingId to options in order to not deliver when cancelled
 
@@ -82,14 +85,14 @@ export const createFreeBooking = functions
       createdAt: serverTimestamp(),
       performAt: subHours(new Date(dateString), 1),
       worker: 'notifyUserScheduledBooking',
-      options: { title, name, email, activityDate, creativeName, startsIn: '1 hour' },
+      options: { ...notifyUserData, startsIn: '1 hour' },
     })
 
     await scheduleTask({
       createdAt: serverTimestamp(),
       performAt: subDays(new Date(dateString), 1),
       worker: 'notifyUserScheduledBooking',
-      options: { title, name, email, activityDate, creativeName, startsIn: '1 day' },
+      options: { ...notifyUserData, startsIn: '1 day' },
     })
 
     return true
