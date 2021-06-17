@@ -85,7 +85,7 @@ export const createFreeBooking = functions
       createdAt: serverTimestamp(),
       performAt: subHours(new Date(dateString), 1),
       worker: 'notifyUserScheduledBooking',
-      options: { notifyUserData, startsIn: '1 hour' },
+      options: { ...notifyUserData, startsIn: '1 hour' },
     })
 
     await scheduleTask({
