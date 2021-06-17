@@ -1,6 +1,7 @@
 import { Client } from 'postmark'
 
 import { POSTMARK_SERVER_TOKEN, ARTSFLOW_WEBSITE_URL } from './config'
+import { getImageKitUrl } from './utils'
 
 const client = new Client(POSTMARK_SERVER_TOKEN)
 
@@ -9,15 +10,17 @@ interface AddActivityProps {
   title: string
   name: string
   email: string
+  image: string
 }
 
-const FROM_EMAIL = 'hello@artsflow.com'
+const FROM_EMAIL = 'Artsflow<hello@artsflow.com>'
 
-export const notifyAddActivity = ({ id, title, name, email }: AddActivityProps) => {
+export const notifyAddActivity = ({ id, title, name, email, image }: AddActivityProps) => {
   sendEmail(email, 'add-activity', {
     name,
     activity_title: title,
     activity_url: `${ARTSFLOW_WEBSITE_URL}/a/${id}`,
+    activity_image: getImageKitUrl(image, { w: 640, h: 360 }),
   })
 }
 
@@ -56,50 +59,67 @@ export const notifyCreativeNewBooking = ({
 }
 
 interface NewUserBookingProps {
+  id: string
   title: string
   name: string
   email: string
   activityDate: string
   creativeName: string
+  image: string
+  price: string
+  presenceUrl: string
 }
 
 export const notifyUserNewBooking = ({
+  id,
   title,
   name,
   email,
   activityDate,
   creativeName,
+  image,
+  price,
+  presenceUrl,
 }: NewUserBookingProps) => {
   sendEmail(email, 'user-new-booking', {
     name,
     activity_title: title,
     activity_date: activityDate,
     creative_name: creativeName,
+    activity_url: `${ARTSFLOW_WEBSITE_URL}/a/${id}`,
+    activity_image: getImageKitUrl(image, { w: 640, h: 360 }),
+    activity_price: price,
+    activity_presenceUrl: presenceUrl,
   })
 }
 
-export interface UserScheduledBookingProps {
-  title: string
-  name: string
-  email: string
-  activityDate: string
-  creativeName: string
+export interface UserScheduledBookingProps extends NewUserBookingProps {
   startsIn: string
 }
 
 export const notifyUserScheduledBooking = ({
+  id,
   title,
   name,
   email,
   activityDate,
   creativeName,
+  image,
+  price,
+  presenceUrl,
   startsIn,
 }: UserScheduledBookingProps) => {
-  sendEmail(email, 'user-scheduled-booking', {
+  const alias = startsIn === '1 hour' ? 'user-scheduled-booking-1h' : 'user-scheduled-booking-1d'
+
+  sendEmail(email, alias, {
     name,
     activity_title: title,
     activity_date: activityDate,
     creative_name: creativeName,
+    activity_url: `${ARTSFLOW_WEBSITE_URL}/a/${id}`,
+    activity_image: getImageKitUrl(image, { w: 640, h: 360 }),
+    activity_price: price,
+    activity_presenceUrl: presenceUrl,
     starts_in: startsIn,
   })
 }

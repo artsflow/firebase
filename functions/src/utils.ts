@@ -111,7 +111,7 @@ export const setupPostmarkServer = async (userId: string): Promise<string> => {
     return token
   } catch (e) {
     functions.logger.error(JSON.stringify(e))
-    return e
+    return Promise.reject(e)
   }
 }
 
@@ -124,4 +124,15 @@ export const getPostmarkServerToken = async (userId: string): Promise<string> =>
   }
 
   return data?.token
+}
+
+export const getImageKitUrl = (url: string, options: any = {}) => {
+  const { w = '150', h = '150', tr = 'fo-auto' } = options
+  if (url?.includes('firebasestorage.googleapis.com')) {
+    return url.replace(
+      'firebasestorage.googleapis.com',
+      `ik.imagekit.io/artsflow/tr:w-${w},h-${h},${tr}`
+    )
+  }
+  return url
 }

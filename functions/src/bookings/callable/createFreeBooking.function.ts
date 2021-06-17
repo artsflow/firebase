@@ -62,8 +62,19 @@ export const createFreeBooking = functions
     }
 
     const creativeName = `${creative.displayName}`
+
     notifyCreativeNewBooking(notifyCreativeData)
-    notifyUserNewBooking({ title, name, email, activityDate, creativeName })
+    notifyUserNewBooking({
+      id: activity.id,
+      image: activity.images[0],
+      title,
+      name,
+      email,
+      activityDate,
+      creativeName,
+      presenceUrl: activity.activityPresence === 'Online' ? activity.presenceUrl : '',
+      price: activity.monetizationType === 'Free' ? 'Free to join' : `£${activity.price} paid`,
+    })
 
     // TODO: add bookingId to options in order to not deliver when cancelled
 

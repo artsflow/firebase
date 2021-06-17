@@ -44,7 +44,13 @@ export const addActivity = functions.region('europe-west2').https.onCall(async (
   const { data: userData } = await getDocument(userId, 'users')
   const { email, firstName, displayName } = userData
 
-  notifyAddActivity({ id, title: data.title, email, name: firstName || displayName })
+  notifyAddActivity({
+    id,
+    title: data.title,
+    email,
+    name: firstName || displayName,
+    image: data.images[0],
+  })
 
   return id
 })

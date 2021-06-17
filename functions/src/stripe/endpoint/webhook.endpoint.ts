@@ -21,12 +21,12 @@ export const webhook = functions
       response.send({ received: true })
     } catch (err) {
       functions.logger.error(err)
-      response.status(400).send(`Webhook Error: ${err.message}`)
+      response.status(400).send(`Webhook Error`)
     }
   })
 
 const createBooking = async (data: any) => {
-  const { userId, phone, creativeId, title, name, email, dateString } = data.metadata
+  const { userId, phone, creativeId, title, name, email, dateString, activityId } = data.metadata
   const { data: user, snapshot: userSnapshot } = await getDocument(userId, 'users')
   if (!user.phone) await userSnapshot.ref.set({ phone }, { merge: true })
 
@@ -40,6 +40,8 @@ const createBooking = async (data: any) => {
   await db.collection('bookings').add(bookingData)
 
   const { data: creative } = await getDocument(creativeId, 'users')
+  const { data: activity } = await getDocument(activityId, 'activities')
+
   const activityDate = format(new Date(dateString), 'dd MMM, yyy - HH:mm')
 
   const notifyCreativeData = {
@@ -54,7 +56,20 @@ const createBooking = async (data: any) => {
   const creativeName = `${creative.displayName}`
 
   notifyCreativeNewBooking(notifyCreativeData)
-  notifyUserNewBooking({ title, name, email, activityDate, creativeName })
+
+  const notifyUserData = {
+    id: activity.id,
+    image: activity.images[0],
+    title,
+    name,
+    email,
+    activityDate,
+    creativeName,
+    presenceUrl: activity.activityPresence === 'Online' ? activity.presenceUrl : '',
+    price: activity.monetizationType === 'Free' ? 'Free to join' : `£${activity.price} paid`,
+  }
+
+  notifyUserNewBooking(notifyUserData)
 
   // TODO: add bookingId to options in order to not deliver when cancelled
 
@@ -62,13 +77,13 @@ const createBooking = async (data: any) => {
     createdAt: serverTimestamp(),
     performAt: subHours(new Date(dateString), 1),
     worker: 'notifyUserScheduledBooking',
-    options: { title, name, email, activityDate, creativeName, startsIn: '1 hour' },
+    options: { ...notifyUserData, startsIn: '1 hour' },
   })
 
   await scheduleTask({
     createdAt: serverTimestamp(),
     performAt: subDays(new Date(dateString), 1),
     worker: 'notifyUserScheduledBooking',
-    options: { title, name, email, activityDate, creativeName, startsIn: '1 day' },
+    options: { ...notifyUserData, startsIn: '1 day' },
   })
 }
