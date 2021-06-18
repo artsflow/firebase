@@ -19,22 +19,20 @@ export const getActivityViews = functions
     const projectId = admin.instanceId().app.options.projectId
 
     const query = `
-      SELECT
-        EXTRACT(DAY
-        FROM
-          timestamp) AS day,
-        COUNT(1) AS count
-      FROM
-        \`${projectId}.dashboard.activity_views\`
-      WHERE
-        creativeId = '${userId}'
-      GROUP BY
-        day
-      ORDER BY
-        day ASC
-      LIMIT
-        7
-      `
+    SELECT
+      DATE(timestamp) AS date,
+      COUNT(*) AS count
+    FROM
+      \`${projectId}.dashboard.activity_views\`
+    WHERE
+      DATE(timestamp) BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY)
+      AND CURRENT_DATE()
+      AND creativeId = '${userId}'
+    GROUP BY
+      date
+    ORDER BY
+      date DESC 
+        `
 
     try {
       const result = await bigquery.dataset('dashboard').table('activity_views').query({ query })
