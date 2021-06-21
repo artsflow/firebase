@@ -26,10 +26,11 @@ export const createPaymentIntent = functions
 
     const email = user.email
     const activityTitle = activity.title
-    const amount = activity.price * 100
-
-    const artsflowFeeAmount = Math.round((amount * ARTSFLOW_FEE) / 100)
+    const isFeePassed = activity.isFeePassed
+    const price = activity.price * 100
+    const artsflowFeeAmount = Math.round((price * ARTSFLOW_FEE) / 100)
     const creativeConnectedAccountId = creative.stripeAccountId
+    const amount = isFeePassed ? price + artsflowFeeAmount : price
 
     const customer = await getOrCreateStripeCustomer(userId, { phone, name })
 
@@ -57,6 +58,7 @@ export const createPaymentIntent = functions
         title: activityTitle,
         creativeId: creative.id,
         amount,
+        isFeePassed,
       },
     })
 
