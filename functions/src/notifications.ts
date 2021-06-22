@@ -124,6 +124,19 @@ export const notifyUserScheduledBooking = ({
   })
 }
 
+interface CancelBookingProps {
+  title: string
+  email: string
+  activityDate: string
+}
+
+export const notifyUserCancelBooking = ({ title, email, activityDate }: CancelBookingProps) => {
+  sendEmail(email, 'user-cancel-booking', {
+    activity_title: title,
+    activity_date: activityDate,
+  })
+}
+
 const sendEmail = (to: string, templateAlias: string, templateModel: any) => {
   client.sendEmailWithTemplate({
     From: FROM_EMAIL,
