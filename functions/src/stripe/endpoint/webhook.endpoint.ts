@@ -54,7 +54,7 @@ const createBooking = async (data: any) => {
     createdAt: serverTimestamp(),
   }
 
-  await db.collection('bookings').add(bookingData)
+  const { id: bookingId } = await db.collection('bookings').add(bookingData)
 
   const activityDate = format(new Date(dateString), 'dd MMM, yyy - HH:mm')
 
@@ -72,6 +72,7 @@ const createBooking = async (data: any) => {
   notifyCreativeNewBooking(notifyCreativeData)
 
   const notifyUserData = {
+    bookingId,
     id: activity.id,
     image: activity.images[0],
     title,

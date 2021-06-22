@@ -23,6 +23,7 @@ export * from './stripe/endpoint/webhook.endpoint'
 export * from './stripe/endpoint/webhook-connect.endpoint'
 
 export * from './bookings/callable/createFreeBooking.function'
+export * from './bookings/callable/cancelBooking.function'
 
 export * from './system/reactive/taskRunner.function'
 export * from './system/reactive/activityPageViewsToBigQuery.pubsub'
