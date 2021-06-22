@@ -26,21 +26,35 @@ export const webhook = functions
   })
 
 const createBooking = async (data: any) => {
-  const { userId, phone, creativeId, title, name, email, dateString, activityId } = data.metadata
+  const {
+    userId,
+    phone,
+    creativeId,
+    title,
+    name,
+    email,
+    dateString,
+    activityId,
+    timestamp,
+    amount,
+    isFeePassed,
+  } = data.metadata
   const { data: user, snapshot: userSnapshot } = await getDocument(userId, 'users')
   if (!user.phone) await userSnapshot.ref.set({ phone }, { merge: true })
 
+  const { data: creative } = await getDocument(creativeId, 'users')
+  const { data: activity } = await getDocument(activityId, 'activities')
+
   const bookingData = {
     ...data.metadata,
-    timestamp: Number(data.metadata.timestamp),
+    timestamp: Number(timestamp),
+    amount: Number(amount),
+    isFeePassed: isFeePassed === 'true' ? true : false, // because Stripe metadata is saved as string not boolean
     stripePaymentIntendId: data.id,
     createdAt: serverTimestamp(),
   }
 
   await db.collection('bookings').add(bookingData)
-
-  const { data: creative } = await getDocument(creativeId, 'users')
-  const { data: activity } = await getDocument(activityId, 'activities')
 
   const activityDate = format(new Date(dateString), 'dd MMM, yyy - HH:mm')
 
