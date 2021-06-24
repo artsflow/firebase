@@ -54,7 +54,7 @@ const createBooking = async (data: any) => {
     createdAt: serverTimestamp(),
   }
 
-  await db.collection('bookings').add(bookingData)
+  const { id: bookingId } = await db.collection('bookings').add(bookingData)
 
   const activityDate = format(new Date(dateString), 'dd MMM, yyy - HH:mm')
 
@@ -72,6 +72,7 @@ const createBooking = async (data: any) => {
   notifyCreativeNewBooking(notifyCreativeData)
 
   const notifyUserData = {
+    bookingId,
     id: activity.id,
     image: activity.images[0],
     title,
@@ -88,14 +89,12 @@ const createBooking = async (data: any) => {
   // TODO: add bookingId to options in order to not deliver when cancelled
 
   await scheduleTask({
-    createdAt: serverTimestamp(),
     performAt: subHours(new Date(dateString), 1),
     worker: 'notifyUserScheduledBooking',
     options: { ...notifyUserData, startsIn: '1 hour' },
   })
 
   await scheduleTask({
-    createdAt: serverTimestamp(),
     performAt: subDays(new Date(dateString), 1),
     worker: 'notifyUserScheduledBooking',
     options: { ...notifyUserData, startsIn: '1 day' },

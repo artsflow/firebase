@@ -48,7 +48,7 @@ export const createFreeBooking = functions
 
     if (!user.phone) await userSnapshot.ref.set({ phone }, { merge: true })
 
-    await db.collection('bookings').add(bookingData)
+    const { id: bookingId } = await db.collection('bookings').add(bookingData)
 
     const activityDate = format(new Date(dateString), 'dd MMM, yyy - HH:mm')
 
@@ -66,6 +66,7 @@ export const createFreeBooking = functions
     notifyCreativeNewBooking(notifyCreativeData)
 
     const notifyUserData = {
+      bookingId,
       id: activity.id,
       image: activity.images[0],
       title,
@@ -82,14 +83,12 @@ export const createFreeBooking = functions
     // TODO: add bookingId to options in order to not deliver when cancelled
 
     await scheduleTask({
-      createdAt: serverTimestamp(),
       performAt: subHours(new Date(dateString), 1),
       worker: 'notifyUserScheduledBooking',
       options: { ...notifyUserData, startsIn: '1 hour' },
     })
 
     await scheduleTask({
-      createdAt: serverTimestamp(),
       performAt: subDays(new Date(dateString), 1),
       worker: 'notifyUserScheduledBooking',
       options: { ...notifyUserData, startsIn: '1 day' },

@@ -1,5 +1,5 @@
 import { notifyUserScheduledBooking, UserScheduledBookingProps } from '../notifications'
-import { db } from '../config'
+import { db, serverTimestamp } from '../config'
 
 interface Workers {
   [key: string]: (options: any) => Promise<any>
@@ -13,4 +13,6 @@ export const workers: Workers = {
 }
 
 export const scheduleTask = ({ performAt, worker, options }: any) =>
-  db.collection('tasks').add({ performAt, status: 'scheduled', worker, options })
+  db
+    .collection('tasks')
+    .add({ createdAt: serverTimestamp(), performAt, status: 'scheduled', worker, options })
