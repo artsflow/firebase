@@ -34,7 +34,7 @@ if (process.env.FUNCTIONS_EMULATOR) {
 
 export const stripe = new Stripe(key, { apiVersion: '2020-08-27' })
 
-export const ARTSFLOW_FEE = 10
+export const ARTSFLOW_FEE = 5
 
 export {
   db,
