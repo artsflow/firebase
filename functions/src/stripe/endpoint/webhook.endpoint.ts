@@ -39,6 +39,10 @@ const createBooking = async (data: any) => {
     amount,
     isFeePassed,
   } = data.metadata
+
+  // TODO: hack - make this more robust in the future
+  if (!userId) return // webhook call from stripe products (not artsflow bookings)
+
   const { data: user, snapshot: userSnapshot } = await getDocument(userId, 'users')
   if (!user.phone) await userSnapshot.ref.set({ phone }, { merge: true })
 
