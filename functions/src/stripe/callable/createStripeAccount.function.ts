@@ -18,15 +18,7 @@ export const createStripeAccount = functions
     try {
       const stripeAccount = await stripe.accounts.create({
         country: 'GB',
-        type: 'custom',
-        capabilities: {
-          card_payments: {
-            requested: true,
-          },
-          transfers: {
-            requested: true,
-          },
-        },
+        type: 'standard',
         email: token?.email,
         metadata: {
           userId,
@@ -39,7 +31,7 @@ export const createStripeAccount = functions
       const userRef = db.collection('users').doc(userId)
       const profileRef = db.collection('profiles').doc(userId)
       batch.update(userRef, { stripeAccountId, isVerified: false })
-      batch.update(profileRef, { isVerified: false })
+      batch.update(profileRef, { stripeAccountId, isVerified: false })
       await batch.commit()
 
       return stripeAccountId

@@ -32,35 +32,36 @@ export const createPaymentIntent = functions
     const creativeConnectedAccountId = creative.stripeAccountId
     const amount = isFeePassed ? price + artsflowFeeAmount : price
 
-    const customer = await getOrCreateStripeCustomer(userId, { phone, name })
+    const customer = await getOrCreateStripeCustomer(userId, creative, { phone, name })
 
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount,
-      currency: 'gbp',
-      payment_method_types: ['card'],
-      application_fee_amount: artsflowFeeAmount,
-      receipt_email: email,
-      description: activityTitle,
-      customer: customer.id,
-      on_behalf_of: creativeConnectedAccountId,
-      statement_descriptor_suffix: 'artsflow',
-      transfer_data: {
-        destination: creativeConnectedAccountId,
-      },
-      metadata: {
-        userId,
-        name,
-        phone,
-        email,
-        activityId,
-        timestamp: Number(timestamp),
-        dateString,
-        title: activityTitle,
-        creativeId: creative.id,
+    const paymentIntent = await stripe.paymentIntents.create(
+      {
         amount,
-        isFeePassed,
+        currency: 'gbp',
+        payment_method_types: ['card'],
+        application_fee_amount: artsflowFeeAmount,
+        receipt_email: email,
+        description: activityTitle,
+        customer: customer.id,
+        statement_descriptor_suffix: 'artsflow',
+        metadata: {
+          userId,
+          name,
+          phone,
+          email,
+          activityId,
+          timestamp: Number(timestamp),
+          dateString,
+          title: activityTitle,
+          creativeId: creative.id,
+          amount,
+          isFeePassed,
+        },
       },
-    })
+      {
+        stripeAccount: creativeConnectedAccountId,
+      }
+    )
 
     return {
       clientSecret: paymentIntent.client_secret,

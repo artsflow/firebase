@@ -13,8 +13,9 @@ export const cancelBooking = functions
     if (!userId) return false
 
     const { data: booking, snapshot } = await getDocument(id, 'bookings')
+    const { dateString, title, email, creativeId } = booking
 
-    const { dateString, title, email } = booking
+    const { data: creative } = await getDocument(creativeId, 'users')
 
     functions.logger.info(booking)
 
@@ -29,11 +30,15 @@ export const cancelBooking = functions
     })
 
     if (booking.stripePaymentIntendId) {
-      await stripe.refunds.create({
-        payment_intent: booking.stripePaymentIntendId,
-        refund_application_fee: true,
-        reverse_transfer: true,
-      })
+      await stripe.refunds.create(
+        {
+          payment_intent: booking.stripePaymentIntendId,
+          refund_application_fee: true,
+        },
+        {
+          stripeAccount: creative.stripeAccountId,
+        }
+      )
     }
 
     const taskRef = await db.collection('tasks').where('options.bookingId', '==', booking.id).get()
