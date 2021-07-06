@@ -18,30 +18,36 @@ export const getStripeAccount = async (userId: string) => {
   return await stripe.accounts.retrieve(stripeAccountId)
 }
 
-export const getOrCreateStripeCustomer = async (userId: string, params?: any) => {
+export const getOrCreateStripeCustomer = async (userId: string, creative: any, params?: any) => {
   const { data, snapshot } = await getDocument(userId, 'users')
-  const { stripeCustomerId, email, displayName } = data
+  const { stripeCustomer, email, displayName } = data
   const { name, phone } = params
 
   const updatedName = displayName !== name ? name : displayName
+  const stripeCustomerId = stripeCustomer?.[creative.id]
 
   if (!stripeCustomerId) {
-    const customer = await stripe.customers.create({
-      email,
-      name: updatedName,
-      phone,
-      metadata: {
-        firebaseUID: userId,
+    const customer = await stripe.customers.create(
+      {
+        email,
+        name: updatedName,
+        phone,
+        metadata: {
+          firebaseUID: userId,
+        },
+        ...params,
       },
-      ...params,
-    })
+      { stripeAccount: creative.stripeAccountId }
+    )
     await snapshot.ref.update({
-      stripeCustomerId: customer.id,
+      stripeCustomer: { ...stripeCustomer, [creative.id]: customer.id },
       displayName: updatedName,
     })
     return customer
   } else {
-    return (await stripe.customers.retrieve(stripeCustomerId)) as Stripe.Customer
+    return (await stripe.customers.retrieve(stripeCustomerId, {
+      stripeAccount: creative.stripeAccountId,
+    })) as Stripe.Customer
   }
 }
 

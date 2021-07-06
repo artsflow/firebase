@@ -20,7 +20,6 @@ export const createStripeAccountLinks = functions
       refresh_url: ARTSFLOW_APP_URL,
       return_url: `${ARTSFLOW_APP_URL}/return`,
       type: 'account_onboarding',
-      collect: 'eventually_due',
     })
 
     return accountLinks
